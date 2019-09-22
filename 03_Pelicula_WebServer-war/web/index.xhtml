@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="es" xml:lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:b="http://bootsfaces.net/ui">
+    <h:head>
+        <title>Movies Web Server</title>
+        <h:outputStylesheet name="css/peli.css"/>
+        <h:outputStylesheet name="bootstrap-lib/css/bootstrap.css"/>
+    </h:head>
+    <h:body>
+        <f:loadBundle basename="/Mensajero" var="msg"/>
+        <header>
+            <nav>
+                <ul>
+                    <li><h:link value="#{msg.Inicio}" outcome="index">
+                           
+                        </h:link>
+                    </li>
+                    <li><h:link value="#{msg.Anyadir}" outcome="anadir">
+                           
+                        </h:link>
+                    </li>
+                    <li><b:link value="#{msg.Peliculas}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqTodas}" />
+                        </b:link>
+                    </li>
+                    <li><b:link value="#{msg.NavPeliculaD}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqDirector}" />
+                        </b:link>
+                    </li>
+                    <li><b:link value="#{msg.NavPeliculaT}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqPelicula}" />
+                        </b:link>
+                    </li>
+                    <li><b:link value="#{msg.NavPeliculaA}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqAnyo}" />
+                        </b:link>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+    </h:body>
+
+</html>
+
