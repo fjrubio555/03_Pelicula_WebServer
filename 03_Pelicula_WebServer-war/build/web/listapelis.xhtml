@@ -1,0 +1,202 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="es" xml:lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+    <h:head>
+        <title>Movies Web Server</title>
+        <h:outputStylesheet name="css/peli.css"/>
+        <h:outputStylesheet name="css/animate.css"/>
+        <h:outputScript library="js" name="peli.js"/>
+        <h:outputScript library="jQuery-lib" name="jquery-3.4.1.min.js"/>
+    </h:head>
+    <h:body onload="modalMostrar()">
+        <f:loadBundle basename="/Mensajero" var="msg"/>
+        <header>
+            <nav>
+                <ul>
+                    <li><h:link value="#{msg.Inicio}" outcome="index">
+
+                        </h:link>
+                    </li>
+                    <li><h:link value="#{msg.Anyadir}" outcome="anadir">
+
+                        </h:link>
+                    </li>
+                    <li><b:link value="#{msg.Peliculas}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqTodas}" />
+                        </b:link>
+                    </li>
+                    <li><h:link value="#{msg.NavPeliculaD}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqDirector}" />
+                        </h:link>
+                    </li>
+                    <li><h:link value="#{msg.NavPeliculaT}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqPelicula}" />
+                        </h:link>
+                    </li>
+                    <li><h:link value="#{msg.NavPeliculaA}" outcome="listapelis">
+                            <f:param name="busqueda" value="#{msg.BusqAnyo}" />
+                        </h:link>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <section class="contenido wrapper">
+
+            <f:view>
+                <h:form id="formtabla">
+
+                    <b:dataTable  id="tabladatos" value="#{peliculaController.Busqueda()}" var="peli" widgetVar="tabladatos" styleClass="tabladatos"
+                                  page-length="5" page-length-menu="5,10,20" 
+                                  searching="false" select="true" selection-mode="single" selected-items="rows"
+                                  onselect="${peli}">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{msg.EtiquetaID}"/>
+                            </f:facet>
+                            <h:outputText value="#{peli.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{msg.EtiquetaTitulo}"/>
+                            </f:facet>
+                            <h:outputText value="#{peli.titulo}"/>
+
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{msg.EtiquetaDirector}"/>
+                            </f:facet>
+                            <h:outputText value="#{peli.director}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{msg.EtiquetaAnoEstreno}"/>
+                            </f:facet>
+                            <h:outputText value="#{peli.estreno}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{msg.EtiquetaAccion}"/>
+                            </f:facet>
+
+                            <div class="centrar">
+                                <b:commandButton id="btnBorrar" value="#{msg.BtnEtiquetaBorrar}"  look="danger" iconAwesome="fa-trash-o"
+                                                 ajax="true" onclick="ajax:peliculaController.seleccionar(peli, indexes);" size="lg"
+                                                 oncomplete="$('.modalBorrar').modal('show');"/>
+                                <span> </span>
+                                <b:commandButton id="btnEditar" value="#{msg.BtnEtiquetaEditar}" 
+                                                 iconAwesome="fa-pencil-square-o" ajax="true"
+                                                 onclick="ajax:peliculaController.seleccionar(peli, indexes);"
+                                                 oncomplete="$('.modalEditar').modal('show');" size="lg"
+                                                 update="@(.modalEditar)">
+
+                                </b:commandButton>
+                            </div>
+
+                        </h:column>
+
+                    </b:dataTable>
+                    <b:growl id="mesg" globalOnly="true" class="mesg"
+                             placementFrom="top" placementAlign="center"
+                             show-detail="true" show-summary="true"
+                             allowDismiss="false" delay="3000" escape="true"
+                             animation-enter="animated rollIn"
+                             animation-exit="animated flipOutX" 
+                             severity="info,error"/>   
+                </h:form>
+            </f:view>
+
+
+        </section>
+        <b:form>
+            <b:modal id="modalBusqueda" title="#{peliculaController.modalCabecera()}" styleClass="modalBusqueda"
+                     closable="false"  close-on-escape="false" backdrop="false">
+                <b:inputText id="busqoculto" type="hidden" name="busqueda" value="prueba"/>
+                <b:inputText id="criterioBusqueda"
+                             name="criterioBusqueda"
+                             value="#{peliculaController.paramBusq}"
+                             label="#{peliculaController.modalTituloLabel()}"
+                             required="true"
+                             requiredMessage="#{peliculaController.modalTituloLabel()}"
+                             autocomplete="false"
+                             large-screen="two-thirds">
+                </b:inputText>
+                <b:message for="@previous" />
+                <b:row>
+                    <b:column>
+                        <b:button largeScreen="half" value="#{msg.BtnEtiquetaCancelar}" dismiss="modal" onclick="return false;"/>
+                        <b:commandButton largeScreen="half" value="#{msg.BtnEtiquetaAceptar}"  look="primary" ajax="true" 
+                                         actionListener="#{peliculaController.Busqueda()}" 
+                                         oncomplete="$('.modalBusqueda').modal('hide');return false;" update="formtabla:mesg @(.tabladatos)"/>                                       
+                    </b:column>
+                </b:row>
+            </b:modal>
+        </b:form>
+        <b:form id="formBorrar">
+            <b:modal id="modalBorrar" styleClass="modalBorrar"
+                     closable="false"  close-on-escape="false" backdrop="false"
+                     title="#{msg.EtiquetaBorrado}?">
+
+                <div class="centrar">
+                    <b:commandButton id="btnAcepBorrar" look="danger" icon="ok" ajax="true" value="#{msg.EtiquetaSi}" 
+                                     actionListener="#{peliculaController.borrar()}"
+                                     oncomplete="$('.modalBorrar').modal('hide');return false;" update="formtabla:mesg @(.tabladatos)">
+                    </b:commandButton>
+                    <span> </span>
+                    <b:commandButton look="primary" icon="remove" value="#{msg.EtiquetaNo}" oncomplete="$('.modalBorrar').modal('hide');return false;" 
+                                     update="@(.tabladatos)"/>
+                </div>
+
+            </b:modal>
+        </b:form>
+        <b:form id="formEditar">
+            <b:modal id="modalEditar" styleClass="modalEditar" title="#{msg.EtiquetaEditarPeli}" closable="false"  close-on-escape="false" backdrop="false">
+                <div class="form-group">
+                    <h:outputLabel value="#{msg.EtiquetaTitulo}" for="titulo"/>
+                    <h:inputText id="titulo" value="#{peliculaController.selecPeli.titulo}" class="form-control" required="true" requiredMessage="#{msg.MensajeroTituloReq}">
+                        <f:validateLength for = "titulo" minimum = "1" maximum = "200" />
+                    </h:inputText>
+
+                    <b:message for = "titulo" style = "color:red" />
+                </div>
+                <div class="form-group">
+                    <h:outputLabel value="#{msg.EtiquetaDirector}" for="director"/>
+                    <h:inputText id="director" value="#{peliculaController.selecPeli.director}" class="form-control" required="true" requiredMessage="#{msg.MensajeroDirectorReq}">
+                        <f:validateLength for = "director" minimum = "1" maximum = "200" />
+                    </h:inputText>
+
+                    <b:message for = "director" style = "color:red" />
+                </div>
+                <div class="form-group">
+                    <h:outputLabel value="#{msg.EtiquetaAnoEstreno}" for="estreno"/>
+                    <h:inputText id="estreno" value="#{peliculaController.selecPeli.estreno}" class="form-control" maxlength="4" required="true" requiredMessage="#{msg.MensajeroAnyoReq}">
+                        <f:convertNumber integerOnly="true" type="number" />
+                    </h:inputText>
+
+                    <b:message for = "estreno" style = "color:red" />
+                </div>
+                <br></br>
+                <div class="form-group float-left">
+                    <b:commandButton id="btnGuardar" look="primary" value="#{msg.BtnEtiquetaGuardar}" ajax="true"
+                                     actionListener="#{peliculaController.editar()}" 
+                                     oncomplete="$('.modalEditar').modal('hide');return false;" update="formtabla:mesg @(.tabladatos)">
+                       
+                    </b:commandButton>
+                    <span> </span>
+                    <b:button value="#{msg.BtnEtiquetaCancelar}" dismiss="modal"/>
+
+
+                </div>
+            </b:modal>
+
+        </b:form>
+
+    </h:body>
+</html>
+
